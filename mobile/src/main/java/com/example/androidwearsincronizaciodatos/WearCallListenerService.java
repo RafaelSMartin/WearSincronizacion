@@ -1,6 +1,7 @@
 package com.example.androidwearsincronizaciodatos;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -14,51 +15,53 @@ public class WearCallListenerService extends WearableListenerService {
 
     public static String SERVICE_CALLED_WEAR = "WearMessage";
     private static final String SHARE_TEXT = "SHARE_TEXT";
-    private static final String WEAR_MANDAR_TEXTO ="/mandar_texto";
+    private static final String WEAR_ENVIAR_TEXTO="/enviar_texto";
     Activity activity;
 
     private final static String ENABLE_AUTO_SPEAK_TRANSLATION = "ENABLE_AUTO_SPEAK_TRANSLATION";
     private static String APP_SETTINGS_KEY = "APP_SETTINGS";
     private SharedPreferences settings;
 
-    private static final String KEY_CONTADOR = "com.example.key.contador";
-    private static final String ITEM_CONTADOR = "/contador";
-    private int contador;
-
-    /**
-     * sincronizacion
-     */
-    private static final String WEAR_INICIAR_ACTIVIDAD = "/iniciar";
-    private static final String WEAR_ENVIAR_TEXTO = "/enviar_texto";
-    private static final String WEAR_ENVIAR_TEXTO_AL_PHONE="/enviar_texto_al_phone";
-
 
 
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
-//        super.onMessageReceived(messageEvent);
+        super.onMessageReceived(messageEvent);
 
-        if (messageEvent.getPath().equals(WEAR_ENVIAR_TEXTO_AL_PHONE)) {
-            String event = messageEvent.getPath();
+        String event = messageEvent.getPath();
 
-            Log.d(WEAR_ENVIAR_TEXTO_AL_PHONE, event);
+        Log.d(WEAR_ENVIAR_TEXTO, event);
 
-            String[] message = event.split("--");
+        String [] message = event.split("--");
 
-//        if (message[0].equals(WEAR_ENVIAR_TEXTO_AL_PHONE)) {
-            Log.d(WEAR_ENVIAR_TEXTO_AL_PHONE, message[1]);
-            Toast.makeText(this, message[1].toString() + "", Toast.LENGTH_SHORT).show();
-//        }
+//        Toast.makeText(this, "Mensaje: "+message[1], Toast.LENGTH_SHORT).show();
+
+        if (message[0].equals(WEAR_ENVIAR_TEXTO)) {
+
+            Log.d(WEAR_ENVIAR_TEXTO, message[1]);
+//            MyApplication.getInstance();
+//            MyApplication.setStringFromWear(message[1]);
+
+//            startActivity(new Intent((Intent) Listactivity.getInstance().tutorials.get(message[1]))
+//                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+            //todo deshabilitar sonido de traduccion
+//            settings = getSharedPreferences(APP_SETTINGS_KEY, Context.MODE_PRIVATE);
+//            SharedPreferences.Editor editor = settings.edit();
+//            editor.putBoolean(ENABLE_AUTO_SPEAK_TRANSLATION, false).commit();
+
 
             Intent sendIntent = new Intent(this, MainActivity.class);
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(WEAR_ENVIAR_TEXTO_AL_PHONE, message[1]);
-            sendIntent.setFlags(sendIntent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK);
+            sendIntent.putExtra(WEAR_ENVIAR_TEXTO, message[1]);
+            sendIntent.setFlags(sendIntent.getFlags() | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(sendIntent);
-        } else {
-            super.onMessageReceived(messageEvent);
+
+//            Intent i = new Intent(this, MainActivity.class);
+//            i.putExtra("SHARE_TEXT", message[1]);
+//            startActivity(i);
+
         }
     }
-
 }

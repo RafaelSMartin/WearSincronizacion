@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Button btnEnviarTexto;
     EditText editText;
 
+    private int NOTIFICATION_ID = 1;
+    String textFromWear;
+    TextView textEspera;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,9 +72,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .addOnConnectionFailedListener(this)
                 .build();
 
-
-
         addViews();
+
+//        MyApplication.getInstance();
+        textFromWear = getIntent().getStringExtra(WEAR_ENVIAR_TEXTO);
+        if(textFromWear!=null){
+//            finish();
+            textEspera.setText(textFromWear);
+        }
+
+
+//        if(MyApplication.textEspera != null)
+//             MyApplication.textEspera.setText(MyApplication.getStringFromWear());
+
 
         /**
          * sincronizacion
@@ -107,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void addViews() {
 
         editText=(EditText)findViewById(R.id.edtitText);
-
+        textEspera = (TextView)findViewById(R.id.textViewEspera);
         btnEnviarTexto =(Button) findViewById(R.id.btnEnviarTexto);
         btnEnviarTexto.setOnClickListener(this);
 
@@ -174,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onStart(){
         super.onStart();
         apiClient.connect();
+
     }
 
 
@@ -205,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
+
 
 
 

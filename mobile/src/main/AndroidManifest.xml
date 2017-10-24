@@ -6,6 +6,7 @@
 
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -28,10 +29,9 @@
 
 
         <!--SE PONDRA EN MARCHA EL SERVICIO CUANDO SE CONECTE ALGUN DISPOSITIVO -->
-        <service android:name="WearCallListenerService">
+        <service android:name=".WearCallListenerService">
             <intent-filter>
-
-                <action android:name="com.google.gms.wearable.BIND_LISTENER"/>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
 

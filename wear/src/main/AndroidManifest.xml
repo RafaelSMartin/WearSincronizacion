@@ -33,12 +33,11 @@
 
 
         <!--SE PONDRA EN MARCHA EL SERVICIO CUANDO SE CONECTE ALGUN DISPOSITIVO -->
-        <service android:name="ServiceListener">
-            <intent-filter>
-
-                <action android:name="com.google.gms.wearable.BIND_LISTENER"/>
-            </intent-filter>
-        </service>
+        <!--<service android:name="ServiceListener">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.gms.wearable.BIND_LISTENER"/>-->
+            <!--</intent-filter>-->
+        <!--</service>-->
 
     </application>
 

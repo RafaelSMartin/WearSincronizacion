@@ -1,6 +1,7 @@
 package com.example.androidwearsincronizaciodatos;
 
 import android.os.Bundle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.activity.WearableActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,7 +30,7 @@ import com.google.android.gms.wearable.Wearable;
 
 
 public class MainActivityWear extends WearableActivity  implements DataApi.DataListener,
-        MessageApi.MessageListener,View.OnClickListener,
+        MessageApi.MessageListener, View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     /**
@@ -42,18 +44,19 @@ public class MainActivityWear extends WearableActivity  implements DataApi.DataL
      * */
 
     private static final String WEAR_ENVIAR_TEXTO="/enviar_texto";
-    private static final String WEAR_ENVIAR_TEXTO_AL_PHONE="/enviar_texto_al_phone";
-    private static final String TAG = "/enviar_texto_al_phone";
-    private static final String SHARE_TEXT = "SHARE_TEXT";
     private TextView textView;
     /**
      *CLIENTE
      */
     GoogleApiClient apiClient;
+    private boolean mResolvingError=false;
     Node mNode; // the connected device to send the message to
 
     Button EnviarAlPhone;
     EditText textoAlPhone;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +101,7 @@ public class MainActivityWear extends WearableActivity  implements DataApi.DataL
                 dataItems.release();
             }
         });
+        setAmbientEnabled();
     }
 
     private void addViews() {
@@ -110,62 +114,26 @@ public class MainActivityWear extends WearableActivity  implements DataApi.DataL
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+        switch (v.getId()){
             case R.id.boton_enviar:
-
-                String text = textoAlPhone.getText().toString();
-
-                if (!TextUtils.isEmpty(text)) {
-                    sendMessage(text);
-                    textoAlPhone.getText().clear();
-                    textoAlPhone.requestFocus();
-                } else {
-                    sendMessage("Escribe un mensaje, en el EditText<-");
-                }
+                String s = textoAlPhone.getText().toString();
+                if(s.length() >0)
+                    sendMessage(s);
+                else
+                    Toast.makeText(this, "Introduce texto", Toast.LENGTH_SHORT).show();
+                break;
+            default:
                 break;
         }
     }
-    private void sendMessage(String Key) {
 
-        if (mNode != null && apiClient!= null && apiClient.isConnected()) {
-            Log.d(TAG, "-- " + apiClient.isConnected());
-            Wearable.MessageApi.sendMessage(
-                    apiClient, mNode.getId(), SHARE_TEXT + "--" + Key, null).setResultCallback(
-
-                    new ResultCallback<MessageApi.SendMessageResult>() {
-                        @Override
-                        public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-
-                            if (!sendMessageResult.getStatus().isSuccess()) {
-                                Log.e(TAG, "Failed to send message with status code: "
-                                        + sendMessageResult.getStatus().getStatusCode());
-                            }
-                        }
-                    }
-            );
-        }
-
-    }
-
-    private void resolveNode() {
-
-        Wearable.NodeApi.getConnectedNodes(apiClient)
-                .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
-                    @Override
-                    public void onResult(NodeApi.GetConnectedNodesResult nodes) {
-                        for (Node node : nodes.getNodes()) {
-                            mNode = node;
-                        }
-                    }
-                });
-    }
 
 
     @Override
     public void onConnected(Bundle bundle) {
-        resolveNode();
         Wearable.MessageApi.addListener(apiClient, this);
         Wearable.DataApi.addListener(apiClient, this);
+        resolveNode();
     }
 
     @Override
@@ -249,7 +217,41 @@ public class MainActivityWear extends WearableActivity  implements DataApi.DataL
     }
 
 
-    //</editor-fold>
+    private void sendMessage(String Key) {
+
+        if (mNode != null && apiClient!= null && apiClient.isConnected()) {
+            Log.d(WEAR_ENVIAR_TEXTO, "-- " + Key + apiClient.isConnected());
+            Wearable.MessageApi.sendMessage(
+                    apiClient, mNode.getId(), WEAR_ENVIAR_TEXTO + "--" + Key, null).setResultCallback(
+
+                    new ResultCallback<MessageApi.SendMessageResult>() {
+                        @Override
+                        public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+
+                            if (!sendMessageResult.getStatus().isSuccess()) {
+                                Log.e(WEAR_ENVIAR_TEXTO, "Failed to send message with status code: "
+                                        + sendMessageResult.getStatus().getStatusCode());
+                            }
+                        }
+                    }
+            );
+        }
+
+    }
+
+    private void resolveNode() {
+
+        Wearable.NodeApi.getConnectedNodes(apiClient)
+                .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+                    @Override
+                    public void onResult(NodeApi.GetConnectedNodesResult nodes) {
+                        for (Node node : nodes.getNodes()) {
+                            mNode = node;
+                        }
+                    }
+                });
+    }
+
 
 
 
